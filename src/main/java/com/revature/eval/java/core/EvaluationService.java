@@ -1,8 +1,10 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class EvaluationService {
 
@@ -30,8 +32,14 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String acronym(String phrase) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		StringTokenizer tokenizer = new StringTokenizer(phrase, " -");
+		StringBuilder stringBuilder = new StringBuilder();
+
+		while(tokenizer.hasMoreTokens()){
+			stringBuilder.append(tokenizer.nextToken().charAt(0));
+		}
+
+		return stringBuilder.toString().toUpperCase();
 	}
 
 	/**
@@ -84,18 +92,15 @@ public class EvaluationService {
 		}
 
 		public boolean isEquilateral() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			return sideOne == sideTwo && sideTwo == sideThree;
 		}
 
 		public boolean isIsosceles() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			return sideOne == sideTwo || sideTwo == sideThree || sideOne == sideThree;
 		}
 
 		public boolean isScalene() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			return !isEquilateral() && !isIsosceles();
 		}
 
 	}
@@ -116,8 +121,50 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getScrabbleScore(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		HashMap<String, Integer> letterValues = new HashMap<>();
+
+		// Map letters to their value
+		letterValues.put("A", 1);
+		letterValues.put("E", 1);
+		letterValues.put("I", 1);
+		letterValues.put("O", 1);
+		letterValues.put("U", 1);
+		letterValues.put("L", 1);
+		letterValues.put("N", 1);
+		letterValues.put("R", 1);
+		letterValues.put("S", 1);
+		letterValues.put("T", 1);
+
+		letterValues.put("D", 2);
+		letterValues.put("G", 2);
+
+		letterValues.put("B", 3);
+		letterValues.put("C", 3);
+		letterValues.put("M", 3);
+		letterValues.put("P", 3);
+
+		letterValues.put("F", 4);
+		letterValues.put("H", 4);
+		letterValues.put("V", 4);
+		letterValues.put("W", 4);
+		letterValues.put("Y", 4);
+
+		letterValues.put("K", 5);
+
+		letterValues.put("J", 8);
+		letterValues.put("X", 8);
+
+		letterValues.put("Q", 10);
+		letterValues.put("Z", 10);
+
+		int score = 0;
+		for (String letter : string.split("")){
+			score += letterValues.get(letter.toUpperCase());
+		}
+
+
+
+		return score;
 	}
 
 	/**
@@ -151,9 +198,15 @@ public class EvaluationService {
 	 * Note: As this exercise only deals with telephone numbers used in
 	 * NANP-countries, only 1 is considered a valid country code.
 	 */
-	public String cleanPhoneNumber(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	public String cleanPhoneNumber(String string){
+		String number = string.replaceAll("[^0-9]", "");
+		if (number.length() > 10 || number.length() < 9) {
+			throw new IllegalArgumentException();
+		}
+		if (number.length() == 10) {
+			number = number.substring(1);
+		}
+		return number;
 	}
 
 	/**
@@ -166,8 +219,17 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Map<String, Integer> wordCount(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		HashMap<String, Integer> wordFrequency = new HashMap<>();
+		StringTokenizer tokenizer = new StringTokenizer(string, " ,\n");
+		while(tokenizer.hasMoreTokens()){
+			String word = tokenizer.nextToken();
+			if(wordFrequency.containsKey(word)) {
+				wordFrequency.put(word, wordFrequency.get(word) + 1);
+			} else {
+				wordFrequency.put(word, 1);
+			}
+		}
+		return wordFrequency;
 	}
 
 	/**

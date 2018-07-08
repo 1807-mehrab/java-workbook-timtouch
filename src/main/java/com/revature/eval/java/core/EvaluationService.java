@@ -2,6 +2,8 @@ package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EvaluationService
 {
@@ -247,7 +249,8 @@ public class EvaluationService
     {
         String[] digits = Integer.toString(input).split("");
         int sum = 0;
-        for (String digit : digits){
+        for (String digit : digits)
+        {
             sum += Math.pow(Integer.parseInt(digit), digits.length);
         }
 
@@ -267,20 +270,23 @@ public class EvaluationService
     public List<Long> calculatePrimeFactorsOf(long l)
     {
         List<Long> primeFactors = new ArrayList<>();
-        while ( l % 2 == 0){
+        while (l % 2 == 0)
+        {
             primeFactors.add(2L);
             l /= 2;
         }
 
         for (long i = 3; i <= Math.sqrt(l); i += 2)
         {
-            while( l % i == 0){
+            while (l % i == 0)
+            {
                 primeFactors.add(i);
                 l /= i;
             }
         }
 
-        if ( l > 2L) {
+        if (l > 2L)
+        {
             primeFactors.add(l);
         }
         return primeFactors;
@@ -302,12 +308,15 @@ public class EvaluationService
     {
         int primeCounter = 0;
         int currentNumber = 1;
-        if( i <= 0) {
+        if (i <= 0)
+        {
             throw new IllegalArgumentException();
         }
-        while (primeCounter < i){
+        while (primeCounter < i)
+        {
             currentNumber++;
-            if (calculatePrimeFactorsOf(currentNumber).size() == 1) {  // If the number of prime factors of the number is 1, that means that the number is prime since the factor is itself
+            if (calculatePrimeFactorsOf(currentNumber).size() == 1)
+            {  // If the number of prime factors of the number is 1, that means that the number is prime since the factor is itself
                 primeCounter++;
             }
         }
@@ -338,16 +347,38 @@ public class EvaluationService
      */
     public boolean isValidIsbn(String string)
     {
-        // TODO Write an implementation for this method declaration
-        String isbn = string.replaceAll("[^0-9X]","");
+        String isbn = string.replaceAll("[^0-9X]", "");
 
-        // Check if
-        if(isbn.length() != 10 || isbn.indexOf("X") != 9){
+        // Check if isbn has invalid length
+        if (isbn.length() != 10)
+        {
             return false;
         }
 
+        // Check if X exists and if it does, it is the last character
+        if (isbn.contains("X"))
+        {
+            if (isbn.indexOf("X") != 9)
+            {
+                return false;
+            }
+        }
 
-        return false;
+        int sumCheck = 0;
+
+        for (int i = 0; i < isbn.length(); i++)
+        {
+            if (isbn.charAt(i) == 'X')
+            {
+                sumCheck += 10 * (isbn.length() - i);
+            } else
+            {
+                sumCheck += Integer.parseInt(Character.toString(isbn.charAt(i))) * (isbn.length() - i);
+            }
+        }
+
+
+        return sumCheck % 11 == 0;
     }
 
     /**
@@ -365,8 +396,14 @@ public class EvaluationService
      */
     public boolean isPangram(String string)
     {
-        // TODO Write an implementation for this method declaration
-        return false;
+        Set<Character> alphabet = new HashSet<>();
+
+        for (char letter : string.toLowerCase().replaceAll("[^a-z]", "").toCharArray())
+        {
+            alphabet.add(letter);
+        }
+
+        return alphabet.size() == 26;
     }
 
     /**
@@ -392,14 +429,29 @@ public class EvaluationService
      * <p>
      * The sum of these multiples is 78.
      *
-     * @param i
-     * @param set
+     * @param i   Max integer value for multiples (excluded)
+     * @param set A set of integers to determine the multiples of
      * @return
      */
     public int getSumOfMultiples(int i, int[] set)
     {
-        // TODO Write an implementation for this method declaration
-        return 0;
+        Set<Integer> multiples = new HashSet<>();
+        int multiplesSum = 0;
+
+        for (int number : set)
+        {
+            for (int j = 1; number * j < i; j++)
+            {
+                multiples.add(number * j);
+            }
+        }
+
+        for (int multiple : multiples)
+        {
+            multiplesSum += multiple;
+        }
+
+        return multiplesSum;
     }
 
     /**
@@ -440,8 +492,39 @@ public class EvaluationService
      */
     public boolean isLuhnValid(String string)
     {
-        // TODO Write an implementation for this method declaration
-        return false;
+        if (string.length() <= 1)
+        {
+            return false;
+        }
+
+        Pattern pattern = Pattern.compile("[^0-9]");      // Pattern to find alphabet characters
+        Matcher matcher = pattern.matcher(string);
+        if (matcher.find())
+        {
+            return false;
+        }
+
+        String[] digits = string.replaceAll("[^0-9]", "").split("");
+        int sum = 0;
+
+        for (int i = 0; i < digits.length; i++)
+        {
+            if (i % 2 == digits.length % 2)
+            {               // Targets every second digit starting from the right
+                int num = Integer.parseInt(digits[i]) * 2;  // Doubles the digit value
+                if (num > 9)
+                {                               // Subtracts doubled value by 9 if greater than 9
+                    num -= 9;
+                }
+                sum += num;                                 // Add processed number to sum
+
+            } else
+            {
+                sum += Integer.parseInt(digits[i]);
+            }
+        }
+
+        return sum % 10 == 0;
     }
 
     /**

@@ -557,7 +557,27 @@ public class EvaluationService
     public int solveWordProblem(String string)
     {
         // TODO Write an implementation for this method declaration
-        return 0;
+        String[] equation = string.split(" ");
+        int result = 0;
+
+        switch ( equation[3]){
+            case "plus":
+                result = Integer.parseInt(equation[2]) + Integer.parseInt(equation[4].replaceAll("\\?",""));
+                break;
+            case "minus":
+                result = Integer.parseInt(equation[2]) - Integer.parseInt(equation[4].replaceAll("\\?",""));
+                break;
+            case "multiplied":
+                result = Integer.parseInt(equation[2]) * Integer.parseInt(equation[4].replaceAll("\\?",""));
+                break;
+            case "divided":
+                result = Integer.parseInt(equation[2]) / Integer.parseInt(equation[4].replaceAll("\\?",""));
+                break;
+            default:
+                break;
+        }
+
+        return result;
     }
 
     /**
@@ -755,8 +775,28 @@ public class EvaluationService
 
         public String rotate(String string)
         {
-            // TODO Write an implementation for this method declaration
-            return null;
+            if ( key == 0){
+                return string;
+            }
+            ArrayList<Character> alphabet = new ArrayList<>(Arrays.asList('a', 'b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'));
+
+            StringBuilder cypherText = new StringBuilder();
+
+            for(int i = 0; i < string.length(); i++) {
+                Character character = Character.toLowerCase(string.charAt(i)); //
+
+                if (alphabet.contains(character) ){
+                    if (Character.isUpperCase(string.charAt(i))){
+                        cypherText.append(Character.toUpperCase(alphabet.get((alphabet.indexOf(character) + key) % 26)));
+                    } else {
+                        cypherText.append(alphabet.get((alphabet.indexOf(character) + key) % 26));
+                    }
+                } else {
+                    cypherText.append(string.charAt(i));
+                }
+            }
+
+            return cypherText.toString();
         }
 
     }
@@ -786,6 +826,8 @@ public class EvaluationService
      */
     static class AtbashCipher
     {
+        private static String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        private static String encodingAlphabet = "zyxwvutsrqponmlkjihgfedcba";
 
         /**
          * Question 13
@@ -795,8 +837,23 @@ public class EvaluationService
          */
         public static String encode(String string)
         {
-            // TODO Write an implementation for this method declaration
-            return null;
+            StringBuilder encodedText = new StringBuilder();
+            string = string.replaceAll("[^A-Za-z0-9]", "").toLowerCase(); // Removes special characters and converts to lowercase
+
+
+            for (int i = 0; i < string.length(); i += 5){
+                for (int j = i; j < string.length() && j < i + 5; j++)
+                {
+                    String character = Character.toString(string.charAt(j));
+                    if(alphabet.contains(character) ){
+                        encodedText.append(encodingAlphabet.charAt(alphabet.indexOf(character)));
+                    } else {
+                        encodedText.append(string.charAt(j));
+                    }
+                }
+                encodedText.append(" ");
+            }
+            return encodedText.toString().trim();
         }
 
         /**
@@ -807,8 +864,18 @@ public class EvaluationService
          */
         public static String decode(String string)
         {
-            // TODO Write an implementation for this method declaration
-            return null;
+            StringBuilder decodedText = new StringBuilder();
+            string = string.replaceAll(" ", "");
+
+            for(Character c : string.toCharArray()){
+                if(alphabet.contains(Character.toString(c))) {
+                    decodedText.append(alphabet.charAt(encodingAlphabet.indexOf(c)));
+                } else {
+                    decodedText.append(c);
+                }
+            }
+
+            return decodedText.toString();
         }
     }
 

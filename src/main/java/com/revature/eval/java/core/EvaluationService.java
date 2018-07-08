@@ -1,6 +1,11 @@
 package com.revature.eval.java.core;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -143,11 +148,11 @@ public class EvaluationService
     public String cleanPhoneNumber(String string)
     {
         String number = string.replaceAll("[^0-9]", "");
-        if (number.length() > 10 || number.length() < 9)
+        if (number.length() > 11 || number.length() < 10)
         {
             throw new IllegalArgumentException();
         }
-        if (number.length() == 10)
+        if (number.length() == 11)
         {
             number = number.substring(1);
         }
@@ -417,7 +422,15 @@ public class EvaluationService
     public Temporal getGigasecondDate(Temporal given)
     {
         // TODO Write an implementation for this method declaration
-        return null;
+        LocalDateTime start;
+
+        if (given instanceof LocalDate) {
+            start = ((LocalDate) given).atStartOfDay(); // Converts LocalDate to LocalDateTime so we can add seconds to it
+        } else  {
+            start = (LocalDateTime)given;
+        }
+
+        return start.plusSeconds(1000000000L);
     }
 
     /**
@@ -497,7 +510,7 @@ public class EvaluationService
             return false;
         }
 
-        Pattern pattern = Pattern.compile("[^0-9]");      // Pattern to find alphabet characters
+        Pattern pattern = Pattern.compile("[^0-9 ]");      // Pattern to find alphabet characters
         Matcher matcher = pattern.matcher(string);
         if (matcher.find())
         {
@@ -509,11 +522,11 @@ public class EvaluationService
 
         for (int i = 0; i < digits.length; i++)
         {
-            if (i % 2 == digits.length % 2)
-            {               // Targets every second digit starting from the right
+            if (i % 2 == digits.length % 2)                 // Targets every second digit starting from the right
+            {
                 int num = Integer.parseInt(digits[i]) * 2;  // Doubles the digit value
                 if (num > 9)
-                {                               // Subtracts doubled value by 9 if greater than 9
+                {                                           // Subtracts doubled value by 9 if greater than 9
                     num -= 9;
                 }
                 sum += num;                                 // Add processed number to sum
@@ -556,25 +569,22 @@ public class EvaluationService
      */
     public int solveWordProblem(String string)
     {
-        // TODO Write an implementation for this method declaration
         String[] equation = string.split(" ");
         int result = 0;
 
-        switch ( equation[3]){
-            case "plus":
-                result = Integer.parseInt(equation[2]) + Integer.parseInt(equation[4].replaceAll("\\?",""));
-                break;
-            case "minus":
-                result = Integer.parseInt(equation[2]) - Integer.parseInt(equation[4].replaceAll("\\?",""));
-                break;
-            case "multiplied":
-                result = Integer.parseInt(equation[2]) * Integer.parseInt(equation[4].replaceAll("\\?",""));
-                break;
-            case "divided":
-                result = Integer.parseInt(equation[2]) / Integer.parseInt(equation[4].replaceAll("\\?",""));
-                break;
-            default:
-                break;
+        // Doesn't work if string is not exactly formatted as in the JavaDoc examples
+        if (string.contains("plus")){
+            result = Integer.parseInt(equation[2]) + Integer.parseInt(equation[4].replaceAll("\\?",""));
+
+        } else if (string.contains("minus")) {
+            result = Integer.parseInt(equation[2]) - Integer.parseInt(equation[4].replaceAll("\\?",""));
+
+        } else if (string.contains("multiplied by")) {
+            result = Integer.parseInt(equation[2]) * Integer.parseInt(equation[5].replaceAll("\\?",""));
+
+        } else if (string.contains("divided by")) {
+            result = Integer.parseInt(equation[2]) / Integer.parseInt(equation[5].replaceAll("\\?",""));
+
         }
 
         return result;
